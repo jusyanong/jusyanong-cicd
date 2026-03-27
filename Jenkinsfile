@@ -135,7 +135,7 @@ pipeline {
         }
         always {
             echo "Pipeline finished for ${APP_NAME}"
-            node('') {
+            node {
                 sh 'docker logout || true'
                 sh 'docker image prune -f || true'
                 cleanWs()
