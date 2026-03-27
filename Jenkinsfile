@@ -22,6 +22,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 git branch: 'master',
@@ -47,7 +48,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        // CI=true prevents interactive watch mode in React
                         sh 'CI=true npm test'
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
@@ -57,7 +57,6 @@ pipeline {
             }
             post {
                 always {
-                    // junit '**/test-results/*.xml'
                     echo 'Test stage complete'
                 }
             }
@@ -81,9 +80,9 @@ pipeline {
                 script {
                     try {
                         sh """
-                            docker build \
-                                -t ${DOCKER_IMAGE}:${IMAGE_TAG} \
-                                -t ${DOCKER_IMAGE}:latest \
+                            docker build \\
+                                -t ${DOCKER_IMAGE}:${IMAGE_TAG} \\
+                                -t ${DOCKER_IMAGE}:latest \\
                                 .
                         """
                     } catch (Exception e) {
@@ -99,8 +98,8 @@ pipeline {
                 script {
                     try {
                         sh """
-                            echo ${DOCKER_CREDS_PSW} | \
-                            docker login -u ${DOCKER_CREDS_USR} --password-stdin
+                            echo \$DOCKER_CREDS_PSW | \\
+                            docker login -u \$DOCKER_CREDS_USR --password-stdin
                             docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
                             docker push ${DOCKER_IMAGE}:latest
                         """
@@ -117,16 +116,13 @@ pipeline {
                 script {
                     try {
                         sh """
-                            # stop and remove existing container if running
                             docker stop ${APP_NAME} || true
                             docker rm ${APP_NAME} || true
-
-                            # pull and run latest image
                             docker pull ${DOCKER_IMAGE}:${IMAGE_TAG}
-                            docker run -d \
-                                --name ${APP_NAME} \
-                                --restart always \
-                                -p ${HOST_PORT}:${CONTAINER_PORT} \
+                            docker run -d \\
+                                --name ${APP_NAME} \\
+                                --restart always \\
+                                -p ${HOST_PORT}:${CONTAINER_PORT} \\
                                 ${DOCKER_IMAGE}:${IMAGE_TAG}
                         """
                     } catch (Exception e) {
@@ -153,6 +149,7 @@ pipeline {
                 }
             }
         }
+
     }
 
     post {
@@ -162,14 +159,14 @@ pipeline {
         }
         failure {
             echo "❌ Build #${BUILD_NUMBER} failed — check the logs."
-            // rollback to previous image
-            sh "docker stop ${APP_NAME} || true"
-            sh "docker run -d --name ${APP_NAME} --restart always -p ${HOST_PORT}:${CONTAINER_PORT} ${DOCKER_IMAGE}:latest || true"
         }
         always {
-            sh 'docker logout || true'
-            sh 'docker image prune -f || true'
-            cleanWs()
+            node('') {
+                sh 'docker logout || true'
+                sh 'docker image prune -f || true'
+                cleanWs()
+            }
         }
     }
+
 }
