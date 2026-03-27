@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS-18'   // must match the name set in Manage Jenkins → Tools
+    }
+
     options {
         timestamps()
         timeout(time: 30, unit: 'MINUTES')
@@ -28,19 +32,6 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    try {
-                        sh 'npm test'
-                    } catch (Exception e) {
-                        currentBuild.result = 'FAILURE'
-                        error("Tests failed: ${e.message}")
-                    }
-                }
-            }
-        }
-
         stage('Build') {
             steps {
                 script {
@@ -49,6 +40,19 @@ pipeline {
                     } catch (Exception e) {
                         currentBuild.result = 'FAILURE'
                         error("Build failed: ${e.message}")
+                    }
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    try {
+                        sh 'npm test'
+                    } catch (Exception e) {
+                        currentBuild.result = 'FAILURE'
+                        error("Tests failed: ${e.message}")
                     }
                 }
             }
