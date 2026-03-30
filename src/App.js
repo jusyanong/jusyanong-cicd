@@ -160,7 +160,7 @@ function App() {
         <div className="cta__inner">
           <h2 className="cta__title">Ready to automate<br />your deployments?</h2>
           <p className="cta__sub">Set up your Jenkins pipeline in minutes.</p>
-          <a href="https://github.com/jusyanong/UAT-FE-Pipeline" className="btn btn--primary btn--lg" target="_blank" rel="noreferrer">
+          <a href="https://github.com/jusyanong/jusyanong-cicd.git" className="btn btn--primary btn--lg" target="_blank" rel="noreferrer">
             View on GitHub →
           </a>
         </div>
@@ -168,7 +168,7 @@ function App() {
 
       {/* FOOTER */}
       <footer className="footer">
-        <p>© 2025 UAT-FE-Pipeline · Built with React + Jenkins + Docker</p>
+        <p>© 2026 UAT-FE-Pipeline · Built with React + Jenkins + Docker</p>
       </footer>
 
     </div>
