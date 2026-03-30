@@ -136,6 +136,9 @@ pipeline {
         always {
             echo "Pipeline finished for ${APP_NAME}"
         }
+        always {
+        sh 'docker system prune -f'
+    }
     }
 
 }
